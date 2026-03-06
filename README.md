@@ -56,12 +56,13 @@ Interprétabilité : Comprendre quels objets (ex: cyclistes vs feux rouges) caus
 
 🚀 Structure du Repository
 
-src/ingestion.py : Extraction des scènes depuis la base SQLite nuPlan.
+Extraction des scènes depuis la base SQLite nuPlan.
 
-src/preprocessing.py : Préparation et nettoyage des caractéristiques environnementales.
+Préparation et nettoyage des caractéristiques environnementales.
 
-src/training.py : Entraînement et optimisation des algorithmes de classification.
+Entraînement et optimisation des algorithmes de classification.
 
 main.py : Script principal orchestrant tout le pipeline, du chargement des données à l'évaluation finale.
 
-Ce projet s'inscrit dans une démarche de recherche sur la fiabilité des systèmes autonomes complexes.
+Ce projet s'inscrit dans une démarche de recherche sur la fiabilité des systèmes autonomes complexes et a pour objectif un rendu académique, il a été crée dans pour une utilisation dans un cadre scolaire.
+Les dataasets étant très volumineux, ces derniers ne sont pas déposés dans le Repo présent ici (70Go).
