@@ -10,7 +10,7 @@ Plutôt que de simplement "mieux conduire", notre objectif est de construire une
 
 1. Détection d'Incertitude (Uncertainty Estimation)
 
-Utiliser des modèles probabilistes pour quantifier la confiance de l'IA. Si l'incertitude dépasse un seuil critique (ex: forte pluie à Singapour obstruant les capteurs), le système déclenche une alerte.
+Utiliser des modèles probabilistes pour quantifier la confiance de l'IA. Si l'incertitude dépasse un seuil critique (ex: beaucoup d'objets visibles), le système déclenche une alerte.
 
 2. Analyse de la Discrépance Expert/IA
 
