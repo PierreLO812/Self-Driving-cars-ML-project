@@ -1,89 +1,67 @@
-## Project: AI Failure Prediction in Autonomous Driving
+🚘 Couche de Superviseur ML : Prédiction du Transfert de Contrôle (Handover)
 
-## Présentation du Projet
+📌 Vision du Projet
 
-Ce projet de Machine Learning vise à résoudre l'un des défis les plus critiques de la conduite autonome : déterminer quand l'IA n'est plus en mesure de conduire en toute sécurité et doit rendre la main à l'humain (Take-Over Request - TOR).
+Dans le développement des véhicules autonomes de Niveau 4, la question n'est plus seulement de savoir si la voiture peut conduire, mais de savoir quand elle ne peut plus le faire.
 
-Plutôt que de simplement "mieux conduire", notre objectif est de construire une couche de "méta-intelligence" capable de détecter l'incapacité du système face à des conditions environnementales dégradées ou imprévues.
+Ce projet ne propose pas un modèle de conduite, mais une couche de méta-intelligence (superviseur). Son rôle est d'analyser l'environnement en temps réel pour prédire si le système de conduite autonome va atteindre ses limites de sécurité, nécessitant ainsi de rendre la main (Handover) au conducteur humain.
 
-## Objectifs & Missions
+🎯 Pourquoi ce projet est-il crucial ?
 
-1. Détection d'Incertitude (Uncertainty Estimation)
+Un véhicule autonome fait face à un dilemme permanent entre deux impératifs :
 
-Utiliser des modèles probabilistes pour quantifier la confiance de l'IA. Si l'incertitude dépasse un seuil critique (ex: beaucoup d'objets visibles), le système déclenche une alerte.
+L'Impératif de Sécurité : Ne jamais se retrouver dans une situation que l'IA ne sait pas gérer (éviter les accidents).
 
-2. Analyse de la Discrépance Expert/IA
+L'Impératif de Confort : Ne pas interrompre la conduite autonome sans raison valable (éviter la frustration de l'utilisateur).
 
-Comparer la trajectoire prévue par le planificateur de nuPlan avec la trajectoire réelle effectuée par l'expert humain dans les mêmes conditions. Un écart significatif est un indicateur fort d'incapacité de l'IA.
+Notre travail consiste à trouver le réglage mathématique idéal pour que la voiture soit prudente sans être paranoïaque.
 
-3. Classification des Conditions Environnementales
+🧠 Fonctionnement de l'Approche
 
-Identifier automatiquement les facteurs de risque (nuit, pluie, trafic dense, zones de travaux) pour corréler les échecs de l'IA à des contextes spécifiques.
+Plutôt que d'analyser la trajectoire de la voiture (vitesse, angle de volant), nous nous concentrons exclusivement sur son contexte environnemental.
 
-Stratégie de Données : Pourquoi nuPlan ?
+1. Analyse de la complexité
 
-Nous avons choisi le dataset nuPlan (par Motional) pour plusieurs raisons stratégiques liées à notre cours de Self-Driving Cars :
+Nous extrayons des données du dataset nuPlan (Singapore train) pour identifier les facteurs de risque :
 
-Réalisme du Planning : Contrairement aux datasets de vision pure, nuPlan se concentre sur la trajectoire, ce qui est l'étape finale avant l'action.
+Densité de trafic : Nombre de piétons et de véhicules aux alentours.
 
-Diversité Géographique :
+Complexité de la scène : Présence d'intersections, de panneaux stop ou de zones de travaux.
 
-Singapour : Idéal pour tester la résilience face aux pluies tropicales et à la conduite à gauche.
+Conditions géographiques : Conduite à gauche (Singapour) vs conduite à droite (Boston).
 
-Boston/Pittsburgh : Pour les environnements urbains complexes et les variations de luminosité.
+2. Détection d'incapacité
 
-Format SQLite : Permet de requêter efficacement des scénarios spécifiques (ex: "Extraire uniquement les virages à gauche sous la pluie") sans saturer la mémoire.
+Le système apprend à corréler ces facteurs environnementaux avec les moments où, dans la réalité, un conducteur expert a jugé nécessaire de reprendre les commandes. Si l'environnement devient trop "bruyant" ou complexe, le modèle déclenche une alerte de transfert.
 
-## Architecture Technique & Code
+🛠️ Méthodologie et Stratégie ML
 
-Stack Technologique
+Nous avons exploré plusieurs philosophies de modèles pour répondre aux exigences du barème :
 
-Langage : Python 3.9+
+L'Approche Sécuritaire (Random Forest) : Un modèle conçu pour ne rater aucun danger. Il est extrêmement sûr mais a tendance à rendre la main trop souvent dès qu'un doute subsiste.
 
-Framework ML : PyTorch (ou TensorFlow) pour les réseaux de neurones.
+L'Approche Équilibrée (Boosting) : Un modèle plus fin qui cherche à mieux distinguer les situations réellement critiques des situations simplement denses.
 
-Data Handling : nuplan-devkit pour l'interface avec les bases de données .db.
+Le Modèle Hybride (Final) : Une combinaison intelligente (Voting) qui permet d'ajuster le curseur de décision. Cela permet de garantir qu'une fois le système déployé en production, on puisse choisir de privilégier soit la fluidité, soit la sécurité absolue.
 
-Visualisation : Matplotlib & Plotly pour les cartes de chaleur d'incertitude.
+🎓 Concepts Clés (Lien avec le cours Coursera)
 
-Méthodologie de Développement
+Ce projet met en pratique des piliers théoriques de la conduite autonome :
 
-Phase d'Extraction (Data Engineering) : Filtrage des scènes via SQLite pour créer des sous-ensembles "Easy" (beau temps) vs "Hard" (pluie/nuit).
+OOD (Out-of-Distribution) : Reconnaître quand la voiture entre dans un scénario qu'elle n'a jamais rencontré à l'entraînement.
 
-Modélisation :
+Minimal Risk Maneuver (MRM) : Le handover est le point de départ de la mise en sécurité du véhicule.
 
-Entraînement d'un modèle de prédiction de trajectoire.
+Interprétabilité : Comprendre quels objets (ex: cyclistes vs feux rouges) causent le plus de stress au système de planification.
 
-Implémentation de couches de Dropout (Monte Carlo Dropout) pour estimer l'incertitude épistémique.
+🚀 Structure du Repository
 
-Évaluation : Création d'un score de "Safety Gap" (l'écart entre la décision IA et la sécurité minimale).
+src/ingestion.py : Extraction des scènes depuis la base SQLite nuPlan.
 
-## Installation & Git Workflow
+src/preprocessing.py : Préparation et nettoyage des caractéristiques environnementales.
 
-Installation
+src/training.py : Entraînement et optimisation des algorithmes de classification.
 
-Cloner le repo : git clone (https://github.com/Pierre330ZB/ML-pj-self-drving-cars)
+main.py : Script principal orchestrant tout le pipeline, du chargement des données à l'évaluation finale.
 
-Installer le devkit : pip install nuplan-devkit
-
-Configurer les chemins : Voir le fichier DATASET.md.
-
-Workflow Git (Règles d'équipe)
-
-Main : Branche de production, code stable uniquement.
-
-Develop : Branche d'intégration des fonctionnalités.
-
-Feature/[nom] : Branches individuelles pour chaque mission (ex: feature/uncertainty-model).
-
-Interdiction : Ne jamais pusher de fichiers .db ou de dossiers data/ sur le repo (utilisez le .gitignore).
-
-## Concepts Clés (Lien avec Coursera)
-
-OOD (Out-of-Distribution) : Détecter quand l'environnement ne ressemble plus aux données d'entraînement.
-
-LIDAR/Radar Fusion : Comprendre comment la perte d'un capteur influence la décision de rendre la main.
-
-Minimal Risk Maneuver (MRM) : Le concept théorique de mise en sécurité du véhicule.
-
-"Ce projet est réalisé dans le cadre de l'apprentissage des systèmes de conduite autonome de niveau 4."
+Ce projet s'inscrit dans une démarche de recherche sur la fiabilité des systèmes autonomes complexes.
