@@ -30,9 +30,10 @@ Complexité de la scène : Présence d'intersections, de panneaux stop ou de zon
 
 Conditions géographiques : Conduite à gauche (Singapour) vs conduite à droite (Boston).
 
-2. Détection d'incapacité
+2. Détection d'incapacité (Prédiction Anticipatoire à +2 Frames)
 
-Le système apprend à corréler ces facteurs environnementaux avec les moments où, dans la réalité, un conducteur expert a jugé nécessaire de reprendre les commandes. Si l'environnement devient trop "bruyant" ou complexe, le modèle déclenche une alerte de transfert.
+Le système apprend à corréler ces facteurs environnementaux avec les moments où un conducteur expert a jugé nécessaire de reprendre les commandes. 
+**Innovation technique :** Notre modèle ne se contente pas de réagir au moment présent. La valeur cible est décalée virtuellement (Time Shift). Ainsi, à l'instant `t`, le modèle est entraîné pour prédire si la situation sera critique à l'instant `t+2`. Cette **anticipation de 2 frames** offre au véhicule une marge précieuse pour initier le transfert (Handover) avec souplesse, ou engager un freinage de sécurité (Minimal Risk Maneuver) avant l'impact.
 
 🛠️ Méthodologie et Stratégie ML
 
@@ -56,9 +57,9 @@ Interprétabilité : Comprendre quels objets (ex: cyclistes vs feux rouges) caus
 
 🚀 Structure du Repository
 
-Extraction des scènes depuis la base SQLite nuPlan.
+*   `scripts_python/` : Extraction des scènes depuis SQLite, nettoyage, et entraînement des modèles (RF, GBM, Hybride).
+*   `hardware_control_test/` : **Déploiement Physique (C++ & Computer Vision)**. L'objectif ultime étant l'implémentation dans un véhicule réel, nous avons inclus des algorithmes C++ pour contrôler une voiture miniature télécommandée. Un module OpenCV autonome (`vision_controller.cpp`) analyse un flux caméra en temps réel, extrait les lignes de route, et génère des consignes de direction (Steering/Throttle).
 
-Préparation et nettoyage des caractéristiques environnementales.
 
 Entraînement et optimisation des algorithmes de classification.
 

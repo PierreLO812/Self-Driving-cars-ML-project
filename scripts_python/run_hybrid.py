@@ -25,7 +25,7 @@ def load_module(module_name, script_name):
     return module
 
 def generate_comparative_hybrid_report(report_path, df_shape, target_count, result):
-    content = f"""# 🚘 Rapport d'Analyse ML : Le Modèle Hybride (RF + GBM)
+    content = f"""# 🚘 Rapport d'Analyse ML : Le Modèle Hybride Anticipatoire (RF + GBM, +2 Frames)
 
 Ce document présente l'évaluation de notre nouvelle architecture **Hybride Équilibrée** (Voting Classifier : RF + GBM), conçue spécifiquement pour **maximiser le F1-Score (Le compromis parfait Sécurité/Confort)**.
 
@@ -36,6 +36,8 @@ Pour cette itération, nous avons inversé la philosophie :
 
 *Nous avons utilisé une **GridSearch** avec pour objectif la métrique `f1` pour trouver automatiquement la meilleure pondération de vote de notre IA entre Sécurité (RF) et Précision (GBM).* 
 De plus, le **seuil de déclenchement d'alerte a été calibré à 38%**. L'IA déclenche le Handover si elle détecte un risque mesurable (légèrement en dessous de 50%). Ce seuil "Sweet Spot" protège contre les Faux Négatifs mortels tout en annulant la plupart des fausses alarmes paniques.
+
+> **⏳ Prédiction Anticipatoire** : la Target a été décalée de **+2 frames** (shift temporel). À chaque frame `t`, le modèle prédit si la frame `t+2` nécessitera un Handover.
 
 ## 📊 Résumé du Dataset (Purement Environnemental)
 *   **Total des frames analysées** : `{df_shape[0]:,}`

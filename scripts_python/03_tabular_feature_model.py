@@ -78,31 +78,46 @@ def extract_features_from_db(db_path):
 def define_handover_target(df):
     """
     Applique l'heuristique métier pour définir la Target binaire 'Handover_Required'.
-    Target = 1 SI :
+    Target = 1 SI (dans 2 FRAMES) :
     - Freinage d'urgence (acceleration_x < -1.0)
     - OU Embardée/Lacet brutal (abs(angular_rate_z) > 0.3)
     - OU Scène ultra complexe combinée à une densité (>40 objets ET tag évoquant un piéton/danger)
     Sinon Target = 0.
+
+    PRÉDICTION ANTICIPATOIRE (+2 frames) :
+    La target est décalée de 2 positions en arrière (shift(-2)) :
+    à la frame t, le modèle apprend à prédire ce qui se passera à t+2.
+    Les 2 dernières frames (sans futur connu) sont supprimées.
     """
     if df.empty:
         return df
-        
-    # Heuristique
+
+    # S'assurer que les frames sont dans l'ordre chronologique avant le shift
+    df = df.sort_values('timestamp').reset_index(drop=True)
+
+    # Heuristique (calculée sur la frame courante t)
     condition_brake = df['acceleration_x'] < -1.0
     condition_swerve = df['angular_rate_z'].abs() > 0.3
-    
-    # tags critiques (basés sur l'EDA)
+
+    # Tags critiques (basés sur l'EDA)
     critical_tags = ['near_pedestrian_on_crosswalk', 'near_trafficcone_on_driveable', 'on_intersection']
     condition_complex = (df['num_objects'] > 40) & (df['scenario_type'].isin(critical_tags))
-    
-    # Création de la target
-    df['Target_Handover'] = np.where(condition_brake | condition_swerve | condition_complex, 1, 0)
-    
-    # On peut "drop" la colonne `scenario_type` car on s'en est servi pour la Target
-    # ou la transformer en Dummies (One-Hot) si on veut qu'elle soit une Feature de X.
-    # Dans ce script, on la garde en Feature One-Hot
+
+    # Création de la target brute sur la frame t
+    target_raw = np.where(condition_brake | condition_swerve | condition_complex, 1, 0)
+
+    # ---- DÉCALAGE ANTICIPATOIRE +2 FRAMES ----
+    # df.iloc[t]['Target_Handover'] = ce qui va se passer à t+2
+    df['Target_Handover'] = pd.Series(target_raw, index=df.index).shift(-2)
+
+    # Supprimer les 2 dernières lignes qui n'ont pas de label futur
+    df = df.dropna(subset=['Target_Handover'])
+    df['Target_Handover'] = df['Target_Handover'].astype(int)
+    # ------------------------------------------
+
+    # Encoder la colonne scenario_type en One-Hot pour qu'elle devienne une Feature de X
     df = pd.get_dummies(df, columns=['scenario_type'], prefix='scene', dummy_na=False)
-    
+
     return df
 
 

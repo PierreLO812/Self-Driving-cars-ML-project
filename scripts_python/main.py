@@ -52,15 +52,17 @@ def plot_global_roc(results, y_test, results_dir):
     return roc_path.name
 
 def generate_comparative_report(report_path, df_shape, target_count, results, global_roc_name):
-    content = f"""# 🚘 Rapport d'Analyse ML Multi-Modèles : Prédiction de Désengagement (Handover)
+    content = f"""# 🚘 Rapport d'Analyse ML Multi-Modèles : Prédiction Anticipatoire de Désengagement (+2 Frames)
 
-Ce document présente l'évaluation et la comparaison de trois algorithmes leaders conçus pour prédire l'incapacité d'une IA de conduite autonome uniquement en se basant sur son **environnement**.
+Ce document présente l'évaluation et la comparaison de trois algorithmes leaders conçus pour prédire l'incapacité d'une IA de conduite autonome uniquement en se basant sur son **environnement**, **2 frames avant** l'événement critique.
 
 ## 📊 Résumé du Dataset
 L'extraction SQLite `nuPlan` a généré un dataset purgé de toute donnée cinématique pour éviter toute "triche" prédictive.
 *   **Total des frames analysées** : `{df_shape[0]:,}`
 *   **Nombre de paramètres (Features)** : `{df_shape[1]:,}`
 *   **Situations critiques identifiées (Handover = 1)** : `{target_count:,}` événements identifiés par notre heuristique métier de danger.
+
+> **⏳ Prédiction Anticipatoire** : la Target a été décalée de **+2 frames** (shift temporel). À chaque frame `t`, le modèle prédit si la frame `t+2` sera critique.
 
 ---
 

@@ -1,0 +1,79 @@
+# 🏎️ Guide Matériel & Installation : Module de Vision C++
+
+Ce document détaille le matériel requis et l'architecture système pour combiner votre voiture miniature (gérée par un ESP8266) avec le nouveau module de Computer Vision C++ (OpenCV).
+
+## 🛠️ Architecture Système (Comment ça marche ?)
+
+Votre ESP8266 actuel ([sketch_may27.CPP](file:///d:/SelfDrivingCars/hardware_control_test/sketch_may27.CPP)) gère admirablement les contrôles bas niveau (moteur ESC via PWM, capteur sonar). Cependant, l'ESP8266 n'a **pas la puissance de calcul ni la RAM nécessaires pour traiter un flux vidéo en temps réel** avec OpenCV.
+
+**La solution hybride proposée :**
+1. Un ordinateur monocarte (ex: Raspberry Pi) embarqué sur la voiture lit la caméra et exécute le code `vision_controller.cpp`.
+2. Le Raspberry Pi calcule l'angle de direction et la vitesse.
+3. Il envoie ces deux nombres simples (`steering_angle`, `throttle`) à l'ESP8266 via une liaison Série (UART) ou Wi-Fi local.
+4. L'ESP8266 applique ces commandes physiques aux servomoteurs et moteurs.
+
+---
+
+## 📦 Matériel Requis
+
+### 1. Le "Cerveau" de Vision (Au choix)
+Vous avez besoin d'une carte capable de compiler du C++ et faire tourner OpenCV sous Linux :
+*   **Option A (Recommandée - Bon Marché) : Raspberry Pi 4 (2Go ou 4Go)** - Parfait pour le traitement OpenCV en 640x480.
+*   **Option B (Puissante - AI Ready) : NVIDIA Jetson Nano** - Idéal si vous souhaitez par la suite utiliser vos modèles de Deep Learning Tabulaires/Hybrides traités dans les autres dossiers du projet.
+*   **Option C (Test initial) : Votre PC Windows actuel** - Vous pouvez accrocher une webcam USB à la voiture avec un très long câble (ou transmission vidéo sans fil) et faire tourner le C++ sur votre ordinateur pour prototyper avant d'acheter un Raspberry Pi.
+
+### 2. La Caméra
+*   **Si utilisation d'un Raspberry Pi :** Un module Caméra Raspberry Pi (Pi Camera Module V2 ou V3) avec sa nappe CSI.
+*   **Si utilisation d'un Jetson ou PC :** N'importe quelle webcam USB standard (ex: Logitech C270, très utilisée en modélisme car facile à décarcasser).
+
+### 3. La Connectique
+*   Câbles Dupont (Jumpers) pour relier le port Série (TX/RX) du Raspberry Pi au port Série de l'ESP8266, **OU** 
+*   Configurer l'ESP8266 pour créer un réseau Wi-Fi local auquel le "cerveau" se connectera.
+
+### 4. Alimentation (Power Bank)
+*   L'ESP8266 est probablement alimenté par la batterie de la voiture RC (via le BEC de l'ESC).
+*   Il vous faudra une **batterie externe USB (Power Bank) compacte de 5V/3A** scotchée sur le châssis pour alimenter le Raspberry Pi / Jetson Nano.
+
+---
+
+## 🚀 Comment l'utiliser avec des vidéos de test ?
+
+Si vous n'avez pas encore la caméra sur la voiture, vous pouvez tester l'algorithme immédiatement sur de fausses vidéos de course :
+
+1. Prenez une vidéo MP4 (avec votre téléphone) en filmant la piste miniature, à la même hauteur que la future caméra. Placez ce fichier dans le répertoire `hardware_control_test` sous le nom `test.mp4`.
+2. Modifiez le code de `vision_controller.cpp` :
+   ```cpp
+   // Remplacez :
+   VideoCapture cap(0); // 0 = Webcam
+   
+   // Par :
+   VideoCapture cap("test.mp4"); // Fichier vidéo
+   ```
+3. Suivez la section de compilation ci-dessous.
+
+---
+
+## 🔨 Compilation du Code (Windows MSYS2 / Linux)
+
+Le projet utilise CMake pour faire le lien avec OpenCV.
+
+**Sur Linux (Raspberry Pi / Ubuntu) :**
+```bash
+sudo apt-get update
+sudo apt-get install libopencv-dev cmake g++
+cd /path/to/hardware_control_test
+mkdir build && cd build
+cmake ..
+make
+./vision_controller
+```
+
+**Sur votre PC Windows (si OpenCV est installé via vcpkg ou MSYS2) :**
+Ouvrez le terminal dans `hardware_control_test` :
+```powershell
+mkdir build
+cd build
+cmake ..
+cmake --build .
+# Lancer l'éxécutable généré dans Debug/Release
+```
