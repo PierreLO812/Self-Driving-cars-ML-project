@@ -45,7 +45,7 @@ L'Approche Équilibrée (Boosting) : Un modèle plus fin qui cherche à mieux di
 
 Le Modèle Hybride (Final) : Une combinaison intelligente (Voting) qui permet d'ajuster le curseur de décision. Cela permet de garantir qu'une fois le système déployé en production, on puisse choisir de privilégier soit la fluidité, soit la sécurité absolue.
 
-🎓 Concepts Clés (Lien avec le cours Coursera)
+🎓 Concepts Clés 
 
 Ce projet met en pratique des piliers théoriques de la conduite autonome :
 
@@ -60,6 +60,22 @@ Interprétabilité : Comprendre quels objets (ex: cyclistes vs feux rouges) caus
 *   `scripts_python/` : Extraction des scènes depuis SQLite, nettoyage, et entraînement des modèles (RF, GBM, Hybride).
 *   `hardware_control_test/` : **Déploiement Physique (C++ & Computer Vision)**. L'objectif ultime étant l'implémentation dans un véhicule réel, nous avons inclus des algorithmes C++ pour contrôler une voiture miniature télécommandée. Un module OpenCV autonome (`vision_controller.cpp`) analyse un flux caméra en temps réel, extrait les lignes de route, et génère des consignes de direction (Steering/Throttle).
 
+Matériel :
+
+Pour la Partie hardware, l'objectif étannt de pouvoir ensuite implémenter un algorithme similaire dans une voiture miniature nous avons assembler les éléments suivants : 
+
+*  Voiture : DB8SL moteur type Brushed 550 16T, direction Servo électronique 17kg
+*  Caméra 1080p à flux
+*  Controle : ESP-32 | ESP-8266
+*  Communication : Ecran LCP type Arduino
+*  Batterie : Externe Mobile pour ESP | Lipo 2s (7,4V) ou 3s (11,1V) pour l'alimentation du moteur
+
+Futur : Nvidia Jetson Nano pour améliorer la puissance de calcul et d'analyse et passer de 2 frames d'analyse  à 3-4 secondes d'avance.
+
+Code hardware :
+
+Actuellement le code du hardware est capable de faire avancer la voiture comme un train sur des rails. 
+La suite arrive bientôt.
 
 Entraînement et optimisation des algorithmes de classification.
 
@@ -67,3 +83,9 @@ main.py : Script principal orchestrant tout le pipeline, du chargement des donn�
 
 Ce projet s'inscrit dans une démarche de recherche sur la fiabilité des systèmes autonomes complexes et a pour objectif un rendu académique, il a été crée dans pour une utilisation dans un cadre scolaire.
 Les dataasets étant très volumineux, ces derniers ne sont pas déposés dans le Repo présent ici (70Go).
+
+Suite :
+
+On a besoin de votre aide, si vous avez des idées, des améliorations ou du code à proposer contacter nous et aider nous à avancer et monter un beau projet.
+mail : pleclerc@albertschool.com
+
